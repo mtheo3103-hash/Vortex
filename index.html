@@ -255,17 +255,20 @@
 
         resultBox.style.borderColor = "#ffcc00";
         resultBox.style.color = "#ffcc00";
-        resultBox.innerText = "Kopple mit Vortex API...";
+        resultBox.innerText = "Lese Daten aus GitHub Repo...";
         currentFetchedIp = "";
 
-        // Holt die IP aus dem freien kvdb.io Ordner
-        fetch(`https://kvdb.io/vortex_hub_2026/${id}`)
+        // Wir rufen die Datei direkt von deiner eigenen GitHub Pages Domain ab!
+        // Da die Datei im selben Ordner liegt, reicht ein einfacher Aufruf von 'server-data.json'
+        // Wir hängen ein "?t=" mit Zeitstempel an, damit der Browser nicht die alte Datei aus dem Cache nimmt!
+        fetch(`server-data.json?t=${new Date().getTime()}`)
             .then(res => {
-                if (!res.ok) throw new Error("ID nicht gefunden");
+                if (!res.ok) throw new Error("Datei nicht gefunden");
                 return res.json();
             })
             .then(data => {
-                if (data && data.ip) {
+                // Prüfen, ob die eingegebene ID mit der ID in der Datei übereinstimmt
+                if (data && data.id === id && data.ip) {
                     currentFetchedIp = data.ip;
                     resultBox.style.borderColor = "#00ff88";
                     resultBox.style.color = "#00ff88";
@@ -273,7 +276,7 @@
                     hintText.style.color = "#00ff88";
                     hintText.innerText = "Verbindung stabil! Klicke auf die Box zum Kopieren. ✅";
                 } else {
-                    throw new Error("Fehlerhaftes Format");
+                    throw new Error("ID stimmt nicht überein oder Server offline");
                 }
             })
             .catch(err => {
