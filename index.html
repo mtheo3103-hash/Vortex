@@ -243,10 +243,9 @@
 <script>
     let currentFetchedIp = "";
 
-    // Hilfsfunktion: XOR-Entschlüsselung (Gegenstück zur server.js)
+    // Hilfsfunktion: XOR-Entschlüsselung
     function decrypt(base64Text, key) {
         try {
-            // atob wandelt Base64 zurück in Binärtext um
             const text = atob(base64Text);
             let result = '';
             for (let i = 0; i < text.length; i++) {
@@ -258,7 +257,16 @@
         }
     }
 
-    function fetchServerIp() {
+    // Hilfsfunktion: Erzeugt einen SHA-256 Hash im Browser
+    async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);                    
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Da wir nun asynchronen Krypto-Code nutzen, machen wir die Hauptfunktion "async"
+    async function fetchServerIp() {
         const id = document.getElementById('serverIdInput').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
         const resultBox = document.getElementById('resultBox');
         const hintText = document.getElementById('hintText');
@@ -270,43 +278,50 @@
 
         resultBox.style.borderColor = "#ffcc00";
         resultBox.style.color = "#ffcc00";
-        resultBox.innerText = "Entschlüssele Datenstrom...";
+        resultBox.innerText = "Berechne Sicherheits-Hash...";
         currentFetchedIp = "";
 
-        // Abruf der server-data.json mit Cache-Buster
-        fetch(`server-data.json?t=${new Date().getTime()}`)
-            .then(res => {
-                if (!res.ok) throw new Error("Datei nicht gefunden");
-                return res.json();
-            })
-            .then(data => {
-                if (data && data.vortex_data) {
-                    // Wir knacken das Paket mathematisch mit der eingegebenen ID
-                    const decryptedIp = decrypt(data.vortex_data, id);
-                    
-                    // Verifikation: Nur wenn die ID gestimmt hat, kommt eine gültige Cloudflare-Endung raus
-                    if (decryptedIp && decryptedIp.includes(".trycloudflare.com")) {
-                        currentFetchedIp = decryptedIp;
-                        resultBox.style.borderColor = "#00ff88";
-                        resultBox.style.color = "#00ff88";
-                        resultBox.innerText = decryptedIp;
-                        hintText.style.color = "#00ff88";
-                        hintText.innerText = "Schlüssel korrekt! Verbindung stabil. Klicke auf die Box zum Kopieren. ✅";
-                    } else {
-                        // Bei falschem Schlüssel kommt hier Zeichensalat raus -> Fehler triggern
-                        throw new Error("Falscher Schlüssel");
-                    }
+        try {
+            // 1. Berechne den Krypto-Fingerabdruck der eingegebenen ID
+            const idHash = await sha256(id);
+            
+            resultBox.innerText = "Durchsuche Datenstrom...";
+
+            // 2. Abruf der server-data.json von GitHub (mit Cache-Buster)
+            const res = await fetch(`server-data.json?t=${new Date().getTime()}`);
+            if (!res.ok) throw new Error("Netzwerkliste nicht gefunden");
+            
+            const serverList = await res.json();
+
+            // 3. Überprüfen, ob unser berechneter Hash in der Liste existiert
+            if (serverList && serverList[idHash]) {
+                const securePayload = serverList[idHash];
+                
+                // 4. Den gefundenen IP-Salat mit der ID entschlüsseln
+                const decryptedIp = decrypt(securePayload, id);
+                
+                // 5. Verifizieren, ob die Entschlüsselung geklappt hat
+                if (decryptedIp && decryptedIp.includes(".trycloudflare.com")) {
+                    currentFetchedIp = decryptedIp;
+                    resultBox.style.borderColor = "#00ff88";
+                    resultBox.style.color = "#00ff88";
+                    resultBox.innerText = decryptedIp;
+                    hintText.style.color = "#00ff88";
+                    hintText.innerText = "Schlüssel korrekt! Server gefunden. Klicke zum Kopieren. ✅";
                 } else {
-                    throw new Error("Fehlerhaftes Format");
+                    throw new Error("Entschlüsselung fehlgeschlagen");
                 }
-            })
-            .catch(err => {
-                resultBox.style.borderColor = "#ff4a4a";
-                resultBox.style.color = "#ff4a4a";
-                resultBox.innerText = "❌ ID nicht gefunden oder Server offline";
-                hintText.style.color = "#7c7c8a";
-                hintText.innerText = "Bitte überprüfe die ID im Panel oder starte den Tunnel dort neu.";
-            });
+            } else {
+                throw new Error("Server-ID nicht in der Liste");
+            }
+
+        } catch (err) {
+            resultBox.style.borderColor = "#ff4a4a";
+            resultBox.style.color = "#ff4a4a";
+            resultBox.innerText = "❌ ID nicht gefunden oder Server offline";
+            hintText.style.color = "#7c7c8a";
+            hintText.innerText = "Der eingegebene Schlüssel existiert nicht oder konnte keine Daten freischalten.";
+        }
     }
 
     function copyToClipboard() {
