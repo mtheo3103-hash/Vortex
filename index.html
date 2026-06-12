@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vortex Connection Hub</title>
     <style>
-        /* Sanftes Scrollen aktivieren */
+        /* Sanftes Scrollen */
         html {
             scroll-behavior: smooth;
         }
@@ -19,7 +19,7 @@
             overflow-x: hidden;
         }
 
-        /* --- LEVEL 1: DER INTRO SCREEN (LANDING PAGE) --- */
+        /* --- SCREEN 1: LANDING PAGE --- */
         .intro-screen {
             height: 100vh;
             display: flex;
@@ -51,7 +51,7 @@
             letter-spacing: 1px;
         }
 
-        /* Animierter Scroll-Pfeil */
+        /* Scroll-Pfeil */
         .scroll-hint {
             position: absolute;
             bottom: 40px;
@@ -84,7 +84,7 @@
             animation: bounce 2s infinite;
         }
 
-        /* --- LEVEL 2: DER HUB BEREICH (NACH DEM SCROLLEN) --- */
+        /* --- SCREEN 2: HUB AREA --- */
         .main-content {
             min-height: 100vh;
             display: flex;
@@ -194,7 +194,7 @@
 
         .hint { font-size: 12px; color: #7c7c8a; margin-top: 15px; }
 
-        /* --- ANIMATIONEN --- */
+        /* Animationen */
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(45deg); }
             40% { transform: translateY(-10px) rotate(45deg); }
@@ -211,7 +211,7 @@
 
 <div class="intro-screen">
     <h1 class="intro-title">Vortex Network</h1>
-    <div class="intro-tagline">Bringe Multiplayer auf das nächste Level.</div>
+    <div class="intro-tagline">Bringe Multiplayer auf ein neues Level.</div>
     
     <a href="#hub" class="scroll-hint">
         <span>Verbinden</span>
@@ -258,7 +258,7 @@
         resultBox.innerText = "Kopple mit Vortex API...";
         currentFetchedIp = "";
 
-        // Abruf vom neuen stabilen jsonstorage.net
+        // Holt die IP aus dem unblockierten jsonstorage.net
         fetch(`https://api.jsonstorage.net/v1/json/public/${id}`)
             .then(res => {
                 if (!res.ok) throw new Error("ID nicht gefunden");
@@ -292,4 +292,18 @@
         if (currentFetchedIp) {
             navigator.clipboard.writeText(currentFetchedIp);
             
-            const original
+            const originalHint = hintText.innerText;
+            const originalColor = hintText.style.color;
+            
+            hintText.style.color = "#00ff88";
+            hintText.innerText = "IP kopiert! Starte Minecraft und trete bei! 🎮";
+            
+            setTimeout(() => {
+                hintText.style.color = originalColor;
+                hintText.innerText = originalHint;
+            }, 3000);
+        }
+    }
+</script>
+</body>
+</html>
