@@ -243,6 +243,21 @@
 <script>
     let currentFetchedIp = "";
 
+    // Hilfsfunktion: XOR-Entschlüsselung (Gegenstück zur server.js)
+    function decrypt(base64Text, key) {
+        try {
+            // atob wandelt Base64 zurück in Binärtext um
+            const text = atob(base64Text);
+            let result = '';
+            for (let i = 0; i < text.length; i++) {
+                result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+            }
+            return result;
+        } catch (e) {
+            return null;
+        }
+    }
+
     function fetchServerIp() {
         const id = document.getElementById('serverIdInput').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
         const resultBox = document.getElementById('resultBox');
@@ -255,28 +270,34 @@
 
         resultBox.style.borderColor = "#ffcc00";
         resultBox.style.color = "#ffcc00";
-        resultBox.innerText = "Lese Daten aus GitHub Repo...";
+        resultBox.innerText = "Entschlüssele Datenstrom...";
         currentFetchedIp = "";
 
-        // Wir rufen die Datei direkt von deiner eigenen GitHub Pages Domain ab!
-        // Da die Datei im selben Ordner liegt, reicht ein einfacher Aufruf von 'server-data.json'
-        // Wir hängen ein "?t=" mit Zeitstempel an, damit der Browser nicht die alte Datei aus dem Cache nimmt!
+        // Abruf der server-data.json mit Cache-Buster
         fetch(`server-data.json?t=${new Date().getTime()}`)
             .then(res => {
                 if (!res.ok) throw new Error("Datei nicht gefunden");
                 return res.json();
             })
             .then(data => {
-                // Prüfen, ob die eingegebene ID mit der ID in der Datei übereinstimmt
-                if (data && data.id === id && data.ip) {
-                    currentFetchedIp = data.ip;
-                    resultBox.style.borderColor = "#00ff88";
-                    resultBox.style.color = "#00ff88";
-                    resultBox.innerText = data.ip;
-                    hintText.style.color = "#00ff88";
-                    hintText.innerText = "Verbindung stabil! Klicke auf die Box zum Kopieren. ✅";
+                if (data && data.vortex_data) {
+                    // Wir knacken das Paket mathematisch mit der eingegebenen ID
+                    const decryptedIp = decrypt(data.vortex_data, id);
+                    
+                    // Verifikation: Nur wenn die ID gestimmt hat, kommt eine gültige Cloudflare-Endung raus
+                    if (decryptedIp && decryptedIp.includes(".trycloudflare.com")) {
+                        currentFetchedIp = decryptedIp;
+                        resultBox.style.borderColor = "#00ff88";
+                        resultBox.style.color = "#00ff88";
+                        resultBox.innerText = decryptedIp;
+                        hintText.style.color = "#00ff88";
+                        hintText.innerText = "Schlüssel korrekt! Verbindung stabil. Klicke auf die Box zum Kopieren. ✅";
+                    } else {
+                        // Bei falschem Schlüssel kommt hier Zeichensalat raus -> Fehler triggern
+                        throw new Error("Falscher Schlüssel");
+                    }
                 } else {
-                    throw new Error("ID stimmt nicht überein oder Server offline");
+                    throw new Error("Fehlerhaftes Format");
                 }
             })
             .catch(err => {
