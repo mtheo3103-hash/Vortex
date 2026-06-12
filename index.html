@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vortex Connect</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0c0c0e; color: #e1e1e6; margin: 0; text-align: center; }
+        .hero { height: 70vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #121214 0%, #1a1010 100%); border-bottom: 2px solid #ff4a4a; }
+        .hero h1 { font-size: 48px; color: #ff4a4a; text-transform: uppercase; letter-spacing: 3px; margin: 0; }
+        .hero p { font-size: 20px; color: #a1a1aa; margin-top: 10px; font-style: italic; }
+        .scroll-hint { margin-top: 50px; font-size: 14px; color: #7c7c8a; animation: bounce 2s infinite; }
+        
+        .connect-section { height: 50vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #121214; }
+        .connect-box { background: #202024; padding: 40px; border-radius: 12px; border: 1px solid #2e2e35; width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { margin-top: 0; color: #fff; font-size: 20px; margin-bottom: 20px; }
+        
+        .input-group { display: flex; gap: 10px; width: 100%; }
+        input { flex: 1; padding: 12px; background: #0c0c0e; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 16px; outline: none; }
+        input:focus { border-color: #ff4a4a; }
+        button { padding: 12px 24px; background: #ff4a4a; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #e03e3e; }
+        
+        .result-box { display: none; margin-top: 25px; background: #0c0c0e; padding: 15px; border-radius: 6px; border: 1px dashed #00ff88; color: #00ff88; font-family: monospace; font-size: 18px; cursor: pointer; }
+        
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <h1>VORTEX CONNECT</h1>
+        <p>Bringe Multiplayer auf ein neues Level.</p>
+        <div class="scroll-hint">▼ Scrolle nach unten, um dem Server beizutreten ▼</div>
+    </div>
+
+    <div class="connect-section">
+        <div class="connect-box">
+            <h2>Gib hier die ID ein, die du vom Admin bekommen hast:</h2>
+            <div class="input-group">
+                <input type="text" id="vortexId" placeholder="z.B. saisdf">
+                <button onclick="fetchIp()">Verbinden</button>
+            </div>
+            <div class="result-box" id="resultBox" onclick="copyIp()"></div>
+        </div>
+    </div>
+
+    <script>
+        function fetchIp() {
+            const id = document.getElementById('vortexId').value.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const resultBox = document.getElementById('resultBox');
+            
+            if(!id) return alert("Bitte gib eine gültige ID ein!");
+            
+            resultBox.style.display = "block";
+            resultBox.style.borderColor = "#ffcc00";
+            resultBox.style.color = "#ffcc00";
+            resultBox.innerText = "Suche Server...";
+
+            // Holt die IP anonym aus dem Key-Value-Speicher
+            fetch(`https://kv.jsonbin.io/api/v1/vortex-${id}`)
+                .then(res => {
+                    if (!res.ok) throw new Error();
+                    return res.json();
+                })
+                .then(data => {
+                    if(data && data.ip) {
+                        resultBox.style.borderColor = "#00ff88";
+                        resultBox.style.color = "#00ff88";
+                        resultBox.innerText = data.ip;
+                        alert("Server gefunden! Klicke auf die grüne Box, um die IP zu kopieren.");
+                    } else {
+                        throw new Error();
+                    }
+                })
+                .catch(() => {
+                    resultBox.style.borderColor = "#ff4a4a";
+                    resultBox.style.color = "#ff4a4a";
+                    resultBox.innerText = "❌ ID nicht gefunden oder Server offline";
+                });
+        }
+
+        function copyIp() {
+            const ip = document.getElementById('resultBox').innerText;
+            if(!ip.includes("❌") && !ip.includes("Suche")) {
+                navigator.clipboard.writeText(ip);
+                alert("IP erfolgreich kopiert! Du kannst sie jetzt in Minecraft einfügen.");
+            }
+        }
+    </script>
+</body>
+</html>
