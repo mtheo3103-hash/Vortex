@@ -258,8 +258,8 @@
         resultBox.innerText = "Kopple mit Vortex API...";
         currentFetchedIp = "";
 
-        // Holt die IP aus dem unblockierten jsonstorage.net
-        fetch(`https://api.jsonstorage.net/v1/json/public/${id}`)
+        // Holt die IP aus dem freien kvdb.io Ordner
+        fetch(`https://kvdb.io/vortex_hub_2026/${id}`)
             .then(res => {
                 if (!res.ok) throw new Error("ID nicht gefunden");
                 return res.json();
@@ -286,7 +286,6 @@
     }
 
     function copyToClipboard() {
-        const resultBox = document.getElementById('resultBox');
         const hintText = document.getElementById('hintText');
 
         if (currentFetchedIp) {
