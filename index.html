@@ -3,124 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vortex Network Hub</title>
+    <title>Vortex Hub</title>
     <style>
-        :root {
-            --bg-color: #0c0c0e;
-            --panel-bg: #121214;
-            --accent-color: #ff4a4a;
-            --text-color: #e1e1e6;
-            --text-muted: #a1a1aa;
-            --success-color: #00ff88;
+        html {
+            scroll-behavior: smooth;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #0c0c0e; 
+            color: #e1e1e6; 
+            margin: 0; 
+            padding: 40px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: 20px;
+        }
+
+        h1 { 
+            color: #ff4a4a; 
+            margin: 0; 
+            font-size: 46px; 
+            text-transform: uppercase; 
+            letter-spacing: 5px;
+            text-shadow: 0 0 20px rgba(255, 74, 74, 0.3);
+        }
+
+        .tagline { 
+            color: #a1a1aa; 
+            font-style: italic; 
+            margin-top: 8px; 
+            font-size: 16px;
         }
 
         .container {
-            background: linear-gradient(135deg, #121214 0%, #1a1010 100%);
-            padding: 40px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #121214 0%, #1a1010 100%); 
+            padding: 35px;
             border-radius: 12px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            border-bottom: 3px solid #ff4a4a;
             width: 100%;
-            max-width: 420px;
-            text-align: center;
-            border-bottom: 3px solid var(--accent-color);
+            display: flex;
+            flex-direction: column;
         }
 
-        h1 {
-            color: var(--accent-color);
-            margin: 0 0 5px 0;
-            font-size: 32px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 0 0 15px rgba(255, 74, 74, 0.2);
+        h2 { 
+            font-size: 20px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin-top: 0; 
+            margin-bottom: 25px; 
+            color: #fff; 
         }
 
-        p.subtitle {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 30px;
-            font-style: italic;
+        .input-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            margin-bottom: 25px; 
         }
 
-        .input-group {
-            margin-bottom: 25px;
-            text-align: left;
+        label { 
+            font-size: 12px; 
+            color: #7c7c8a; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 14px;
-            box-sizing: border-box;
-            background-color: var(--bg-color);
-            border: 1px solid #444;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 16px;
-            outline: none;
+        input.text-input { 
+            padding: 14px; 
+            background: #0c0c0e; 
+            border: 1px solid #444; 
+            border-radius: 6px; 
+            color: #fff; 
+            font-size: 16px; 
+            outline: none; 
             transition: border-color 0.2s;
         }
 
-        input[type="text"]:focus {
-            border-color: var(--accent-color);
+        input.text-input:focus { 
+            border-color: #ff4a4a; 
         }
 
-        .btn-main {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--accent-color);
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: background-color 0.2s, transform 0.1s;
+        button { 
+            padding: 14px; 
+            font-size: 15px; 
+            font-weight: bold; 
+            border-radius: 6px; 
+            border: none; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            transition: background 0.2s, transform 0.1s;
         }
 
-        .btn-main:hover {
-            background-color: #e03e3e;
+        button:active { 
+            transform: scale(0.98); 
         }
 
-        .btn-main:active {
-            transform: scale(0.98);
+        .btn-start { 
+            background: #ff4a4a; 
+            color: white; 
+        }
+
+        .btn-start:hover { 
+            background: #e03e3e; 
         }
 
         .result-box {
             margin-top: 30px;
             padding: 20px;
-            background-color: rgba(0, 255, 136, 0.03);
-            border: 1px dashed var(--success-color);
+            background: #0c0c0e;
+            border: 1px solid #2e2e35;
             border-radius: 6px;
             display: none;
+            flex-direction: column;
+            gap: 12px;
+            border-left: 4px solid #00ff88;
+            animation: fadeIn 0.4s ease forwards;
         }
 
-        .result-box h3 {
-            margin: 0 0 15px 0;
-            color: var(--success-color);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-title {
+            color: #00ff88;
+            font-family: monospace;
+            font-size: 14px;
             text-transform: uppercase;
-            font-size: 16px;
             letter-spacing: 1px;
+            margin: 0;
         }
 
         .ip-container {
@@ -134,7 +163,7 @@
             font-size: 16px;
             font-weight: bold;
             color: #fff;
-            background: #0c0c0e;
+            background: #121214;
             padding: 12px;
             border-radius: 6px;
             border: 1px solid #2e2e35;
@@ -145,49 +174,65 @@
         }
 
         .btn-copy {
-            background: #2e2e35;
-            color: #fff;
+            background: #202024;
+            color: #e1e1e6;
             border: 1px solid #444;
-            padding: 0 15px;
+            padding: 0 20px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 14px;
-            transition: background 0.2s;
+            font-size: 13px;
+            text-transform: uppercase;
+            transition: all 0.2s;
         }
 
         .btn-copy:hover {
-            background: #444;
-            border-color: var(--success-color);
-            color: var(--success-color);
+            background: #121214;
+            border-color: #00ff88;
+            color: #00ff88;
+        }
+
+        .hint { 
+            font-size: 12px; 
+            color: #7c7c8a; 
+            text-align: center; 
+            margin-top: 25px; 
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🌀 Vortex Hub</h1>
-    <p class="subtitle">Trage die ID ein, um die Minecraft-IP zu bekommen.</p>
-    
-    <div class="input-group">
-        <label for="serverId">Server Netzwerk ID</label>
-        <input type="text" id="serverId" placeholder="z.B. meinserver" autocomplete="off">
-    </div>
-    
-    <button id="btnConnect" class="btn-main" onclick="fetchServerIp()">IP abrufen</button>
+<div class="header">
+    <h1>VORTEX HUB</h1>
+    <div class="tagline">Bringe Multiplayer auf ein neues Level.</div>
+</div>
 
-    <div id="resultBox" class="result-box">
-        <h3>✅ Verbindung entschlüsselt!</h3>
-        <div class="ip-container">
-            <div id="ipDisplay" class="ip-text">---</div>
-            <button id="btnCopy" class="btn-copy" onclick="copyIp()">Kopieren</button>
+<div class="container">
+    <div class="card">
+        <h2>Vortex Receiver (Cloudflare)</h2>
+        
+        <div class="input-group">
+            <label for="serverId">Server-ID deiner Freunde eingeben:</label>
+            <input type="text" id="serverId" class="text-input" placeholder="z.B. broserver" autocomplete="off" onkeydown="if(event.key==='Enter') fetchServerIp()">
         </div>
+
+        <button id="btnConnect" class="btn-start" onclick="fetchServerIp()">Verbindung Herstellen</button>
+        
+        <div id="resultBox" class="result-box">
+            <p class="result-title">Verbindung Hergestellt!</p>
+            <div class="ip-container">
+                <div id="ipDisplay" class="ip-text">---</div>
+                <button id="btnCopy" class="btn-copy" onclick="copyIp()">Kopieren</button>
+            </div>
+        </div>
+
+        <p class="hint">Gib die vom Host festgelegte Wunsch-ID ein, um die direkte Minecraft-IP abzurufen.</p>
     </div>
 </div>
 
 <script>
-    // 🌐 DEINE CLOUDFLARE WORKER URL (Hier deine echte URL eintragen!):
-    const WORKER_URL = "https://wispy-bonus-e55f.mtheo3103.workers.dev";
+    // 🌐 DEINE CLOUDFLARE WORKER URL:
+    const WORKER_URL = "https://wispy-bonus-e55f.mtheo3103.workers.dev/";
 
     async function fetchServerIp() {
         const idInput = document.getElementById('serverId').value;
@@ -204,19 +249,19 @@
         }
 
         btn.disabled = true;
-        btn.innerText = "Knacke Verschlüsselung...";
+        btn.innerText = "Verbindung wird abgerufen...";
         resultBox.style.display = "none";
         copyBtn.innerText = "Kopieren";
+        copyBtn.style.color = "#e1e1e6";
+        copyBtn.style.borderColor = "#444";
 
         try {
-            // 1. SHA-256 Hash im Browser berechnen
             const encoder = new TextEncoder();
             const data = encoder.encode(cleanId);
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             const idHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-            // 2. Worker abfragen
             const response = await fetch(`${WORKER_URL}?hash=${idHash}`);
             
             if (!response.ok) {
@@ -226,12 +271,14 @@
             const result = await response.json();
 
             if (result.success && result.payload) {
-                // 3. Entschlüsseln mithilfe der ID als Key
                 const decryptedIp = decrypt(result.payload, cleanId);
 
-                // 4. IP anzeigen
                 ipDisplay.innerText = decryptedIp;
-                resultBox.style.display = "block";
+                resultBox.style.display = "flex";
+                
+                setTimeout(() => {
+                    resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 50);
             } else {
                 alert("Server wurde im Vortex-Netzwerk nicht gefunden!");
             }
@@ -240,24 +287,23 @@
             alert("Dieser Server ist aktuell offline oder die ID existiert nicht.");
         } finally {
             btn.disabled = false;
-            btn.innerText = "IP abrufen";
+            btn.innerText = "Verbindung Herstellen";
         }
     }
 
-    // Kopier-Funktion für die Zwischenablage
     function copyIp() {
         const ipText = document.getElementById('ipDisplay').innerText;
         const copyBtn = document.getElementById('btnCopy');
         
         navigator.clipboard.writeText(ipText).then(() => {
-            copyBtn.innerText = "Kopiert! ✔";
+            copyBtn.innerText = "Kopiert!";
             copyBtn.style.color = "#00ff88";
+            copyBtn.style.borderColor = "#00ff88";
         }).catch(err => {
             console.error("Fehler beim Kopieren: ", err);
         });
     }
 
-    // XOR-Entschlüsselung
     function decrypt(base64, key) {
         const binary = atob(base64);
         let result = '';
